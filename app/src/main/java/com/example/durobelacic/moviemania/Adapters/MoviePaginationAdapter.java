@@ -239,9 +239,12 @@ public class MoviePaginationAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                     database = FirebaseDatabase.getInstance();
                     reference = database.getReference("Watchlist");
                     result.setUser(user);
-                    reference.child(result.getTitle()).setValue(result);
-                    String welcomePage = String.format("You have added "+result.getTitle()+" to your list!");
-                    Toast.makeText(v2.getContext(), ""+welcomePage, Toast.LENGTH_SHORT).show();
+                    String sTitleTrim = result.getTitle().replace(".","").replace("#", "").replace("[","").replace("]", "");
+                    result.setTitle(sTitleTrim);
+                    String sTrimUser = user.replace(".","").replace("#", "").replace("[","").replace("]", "");
+                    reference.child(result.getId().toString()+"_"+sTrimUser).setValue(result);
+                    String addPage = String.format("You have added "+result.getTitle()+" to your list!");
+                    Toast.makeText(v2.getContext(), ""+addPage, Toast.LENGTH_SHORT).show();
                 });
             }
         });

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -135,7 +136,7 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
             adapter.addRemovingFooter();
             adapter.addAll(results);
         });
-        adapter = new WatchlistAdapter(WatchlistFragment.newInstance().mContext, Glide.with(this), bottomSheetDialog, view1, sUser);
+        adapter = new WatchlistAdapter(WatchlistFragment.newInstance().mContext, Glide.with(this), bottomSheetDialog, view1, sUser, this);
         adapter.addLoadingFooter();
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -148,108 +149,7 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
             recyclerView.setAdapter(adapter);
         }
 
-        //loadFirstPage();
-//        try {
-//            loadAll();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-
-        //btnRetry.setOnClickListener(v -> loadFirstPage());
-
-        //swipeRefreshLayout.setOnRefreshListener(this::doRefresh);
-    }
-
-    private List<Result> fetchResult(Response<TopRatedMovies> response) {
-        TopRatedMovies topRatedMovies = response.body();
-        return topRatedMovies.getResults();
-    }
-
-    private void loadAll() throws JSONException {
-        while (currentPage != TOTAL_PAGES + 1){
-            Log.d(TAG, "loadNextPage: " + currentPage);
-            callTopRatedMovies().enqueue(new Callback<TopRatedMovies>() {
-                @Override
-                public void onResponse(Call<TopRatedMovies> call, Response<TopRatedMovies> response) {
-                    //adapter.addRemovingFooter();
-                    isLoading = true;
-                    List<Result> results = fetchResult(response);
-                    pageViewModel.getYear().observe(getViewLifecycleOwner(), item -> {
-                        pageViewModel.getKeyword().observe(getViewLifecycleOwner(), item2 -> {
-                            pageViewModel.getLanguage().observe(getViewLifecycleOwner(), item3 -> {
-                                pageViewModel.getGenre().observe(getViewLifecycleOwner(), item4 -> {
-                                    for(Result result : results){
-                                        for(Integer genreId : result.getGenreIds()) {
-                                            if (adapter.formatYearLabel(result).contains(item) && result.getTitle().toLowerCase().contains(item2.toLowerCase())
-                                                    && result.getOriginalLanguage().contains(item3) && genreId.toString().contains(item4)) {
-                                                //adapter.add(result);
-                                                results1.add(result);
-                                            }
-                                        }
-                                    }
-                                });
-                            });
-                        });
-                    });
-
-                    Set<Result> setResults = new HashSet<>(results1);
-                    List<Result> noDuplicatesList = new ArrayList<>(setResults);
-                    adapter.addAll(noDuplicatesList);
-                    if(currentPage != TOTAL_PAGES + 1) adapter.addLoadingFooter();
-                    else isLastPage = true;
-                }
-                @Override
-                public void onFailure(Call<TopRatedMovies> call, Throwable t) {
-                    t.printStackTrace();
-                    adapter.showRetry(true, fetchErrorMessage(t));
-
-                }
-            });
-            currentPage++;
-        }
-    }
-
-
-    private Call<TopRatedMovies> callTopRatedMovies(){
-        return movieService.getTopRatedMovies(
-                getString(R.string.my_api_key),
-                "en_US",
-                currentPage
-        );
-    }
-
-
-    private void showErrorView(Throwable throwable){
-        if (errorLayout.getVisibility() == View.GONE)
-            errorLayout.setVisibility(View.VISIBLE);
-        progressBar.setVisibility(View.GONE);
-
-        txtError.setText(fetchErrorMessage(throwable));
-    }
-
-    private String fetchErrorMessage(Throwable throwable){
-        String errorMsg = getResources().getString(R.string.error_msg_unknown);
-
-        if(!isNetworkConnected()){
-            errorMsg = getResources().getString(R.string.error_msg_no_internet);
-        }else if (throwable instanceof TimeoutException){
-            errorMsg = getResources().getString(R.string.error_msg_timeout);
-        }
-
-        return errorMsg;
-    }
-
-    private void hideErrorView(){
-        if(errorLayout.getVisibility() == View.VISIBLE){
-            errorLayout.setVisibility(View.GONE);
-            progressBar.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private boolean isNetworkConnected(){
-        ConnectivityManager cm =(ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        return cm.getActiveNetworkInfo() != null;
+        swipeRefreshLayout.setOnRefreshListener(this::doRefresh);
 
     }
 
@@ -269,5 +169,13 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
     @Override
     public void retryPageLoad() {
 
+    }
+
+    public void doRefresh(){
+        WatchlistFragment watchlistFragment = new WatchlistFragment();
+        FragmentTransaction fragmentTransaction1 = getFragmentManager().beginTransaction();
+        fragmentTransaction1.replace(R.id.container_view, watchlistFragment);
+        fragmentTransaction1.addToBackStack(null);
+        fragmentTransaction1.commit();
     }
 }

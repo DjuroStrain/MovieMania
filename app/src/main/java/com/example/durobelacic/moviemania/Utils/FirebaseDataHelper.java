@@ -43,7 +43,7 @@ public class FirebaseDataHelper {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                error.getMessage();
             }
         });
     }

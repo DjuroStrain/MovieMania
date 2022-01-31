@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.durobelacic.moviemania.Adapters.FilterMoviePaginationAdapter;
@@ -77,7 +78,7 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
     private boolean isLoading = false;
     private boolean isLastPage = false;
 
-    private static final int TOTAL_PAGES = 30;
+    private static final int TOTAL_PAGES = 10;
     private int currentPage = PAGE_START;
     private int nCounter = 0;
 
@@ -166,7 +167,7 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
         }
 
         adapter = new FilterMoviePaginationAdapter(ResultsFragment.newInstance().mContext, Glide.with(this), bottomSheetDialog, view1,
-                sUser, sKeyword, sYear, sLang, sGenre);
+                sUser, sKeyword, sYear, sLang, sGenre, TOTAL_PAGES);
         adapter.addLoadingFooter();
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -204,27 +205,8 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
         });
 
         loadFirstPage();
-//        try {
-//            loadAll();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
-        //btnRetry.setOnClickListener(v -> loadFirstPage());
-
-        //swipeRefreshLayout.setOnRefreshListener(this::doRefresh);
     }
 
-
-    private void doRefresh(){
-        progressBar.setVisibility(View.VISIBLE);
-        if(callTopRatedMovies().isExecuted())
-            callTopRatedMovies().cancel();
-
-        adapter.getMovieResults().clear();
-        adapter.notifyDataSetChanged();
-        swipeRefreshLayout.setRefreshing(false);
-    }
 
     private List<Result> fetchResult(Response<TopRatedMovies> response) {
         TopRatedMovies topRatedMovies = response.body();

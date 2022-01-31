@@ -84,7 +84,7 @@ public class MovieManiaActivity extends AppCompatActivity {
         View headerView = navigationView2.getHeaderView(0);
         TextView userLog = headerView.findViewById(R.id.userLog);
         userLog.setText(sUser);
-
+        navigationView2.getMenu().getItem(0).setChecked(true);
         imgBack = (ImageView)findViewById(R.id.btnBack);
         imgBack.setOnClickListener(v -> {
             if(getCurrentFragment().equals("MovieManiaFragment"))
@@ -100,6 +100,7 @@ public class MovieManiaActivity extends AppCompatActivity {
                 fragmentTransaction2.replace(R.id.container_view, movieManiaFragment);
                 fragmentTransaction2.addToBackStack(null);
                 fragmentTransaction2.commit();
+                navigationView2.getMenu().getItem(0).setChecked(true);
             }
             else if (getCurrentFragment().equals("WatchlistFragment")){
                 MovieManiaFragment movieManiaFragment = new MovieManiaFragment();
@@ -107,6 +108,7 @@ public class MovieManiaActivity extends AppCompatActivity {
                 fragmentTransaction1.replace(R.id.container_view, movieManiaFragment);
                 fragmentTransaction1.addToBackStack(null);
                 fragmentTransaction1.commit();
+                navigationView2.getMenu().getItem(0).setChecked(true);
             }
             else if(getCurrentFragment().equals("ResultsFragment")) {
                 FilterFragment filterFragment = new FilterFragment();

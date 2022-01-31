@@ -1,5 +1,6 @@
 package com.example.durobelacic.moviemania.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.text.method.ScrollingMovementMethod;
@@ -12,9 +13,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -25,9 +28,11 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.durobelacic.moviemania.Fragments.ResultsFragment;
+import com.example.durobelacic.moviemania.Fragments.WatchlistFragment;
 import com.example.durobelacic.moviemania.Models.Result;
 import com.example.durobelacic.moviemania.MovieManiaActivity;
 import com.example.durobelacic.moviemania.R;
+import com.example.durobelacic.moviemania.Utils.FirebaseDataHelper;
 import com.example.durobelacic.moviemania.Utils.MoviePaginationAdapterCallback;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.DataSnapshot;
@@ -66,7 +71,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private String errorMsg;
 
     MovieManiaActivity movieManiaActivity;
-    ResultsFragment resultsFragment;
+    WatchlistFragment watchlistFragment;
 
     private BottomSheetDialog bottomSheetDialog;
     private View view;
@@ -75,7 +80,9 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private FirebaseDatabase database;
     private DatabaseReference reference;
 
-    public WatchlistAdapter(Context context, RequestManager glide, BottomSheetDialog bottomSheetDialog, View view, String user) {
+    private List<Result> watchlist = new ArrayList<>();
+
+    public WatchlistAdapter(Context context, RequestManager glide, BottomSheetDialog bottomSheetDialog, View view, String user, WatchlistFragment watchlistFragment) {
         this.context = context;
         this.mCallback = (MoviePaginationAdapterCallback) context;
         movieResults = new ArrayList<>();
@@ -83,6 +90,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.bottomSheetDialog = bottomSheetDialog;
         this.view = view;
         this.user = user;
+        this.watchlistFragment = watchlistFragment;
     }
 
     public List<Result> getMovieResults() {
@@ -100,7 +108,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         switch (viewType) {
             case ITEM:
-                View viewItem = inflater.inflate(R.layout.item_list, parent, false);
+                View viewItem = inflater.inflate(R.layout.item_watchlist, parent, false);
                 viewHolder = new WatchlistAdapter.MovieVH(viewItem);
                 break;
             case LOADING:
@@ -112,7 +120,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         Result result = movieResults.get(position); // Movie
         switch (getItemViewType(position)) {
 
@@ -122,6 +130,8 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     if(result.getUser().equals(user))
                     {
                         final WatchlistAdapter.MovieVH movieVH = (WatchlistAdapter.MovieVH) holder;
+                        watchlist.add(result);
+                        movieVH.mNoMovies.setVisibility(View.GONE);
                         movieVH.mMovieTitle.setText(result.getTitle());
                         movieVH.mYear.setText(formatYearLabel(result));
                         movieVH.mMovieDesc.setText(result.getOverview());
@@ -144,9 +154,19 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                                 .centerCrop()
                                 .into(movieVH.mPosterImg);
                     }
-                    else{
+                    else if(watchlist.isEmpty() && position == movieResults.size() - 1){
+                        System.out.println("Uslo");
+                        final WatchlistAdapter.MovieVH movieVH = (WatchlistAdapter.MovieVH) holder;
+                        movieVH.mNoMovies.setVisibility(View.VISIBLE);
+                        movieVH.mLinearLayout.setVisibility(View.GONE);
+                        movieVH.mCardView.setVisibility(View.GONE);
+                        movieVH.mProgress.setVisibility(View.GONE);
+                    } else {
                         setVisibility(holder);
                     }
+                }
+                else {
+                    return;
                 }
                 break;
 
@@ -200,10 +220,13 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 btnRemoveFromList.setOnClickListener(v2 -> {
                     database = FirebaseDatabase.getInstance();
                     reference = database.getReference("Watchlist");
-                    result.setUser(user);
-                    reference.child(result.getTitle()).removeValue();
-                    movieResults.remove(holder.getAdapterPosition());
+                    String sTrimUser = user.replace(".","").replace("#", "").replace("[","").replace("]", "");
+                    reference.child(result.getId().toString()+"_"+sTrimUser).removeValue();
+                    notifyItemRemoved(position);
                     notifyDataSetChanged();
+                    watchlistFragment.doRefresh();
+                    String deletePage = String.format("You have deleted "+result.getTitle()+" from your list!");
+                    Toast.makeText(v2.getContext(), ""+deletePage, Toast.LENGTH_SHORT).show();
                 });
             }
         });
@@ -368,6 +391,9 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         private TextView mYear; // displays "year | language"
         private ImageView mPosterImg;
         private ProgressBar mProgress;
+        private TextView mNoMovies;
+        private LinearLayout mLinearLayout;
+        private CardView mCardView;
 
         public MovieVH(View itemView) {
             super(itemView);
@@ -377,6 +403,9 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             mYear = itemView.findViewById(R.id.movie_year);
             mPosterImg = itemView.findViewById(R.id.movie_poster);
             mProgress = itemView.findViewById(R.id.movie_progress);
+            mNoMovies = itemView.findViewById(R.id.noResults);
+            mLinearLayout = itemView.findViewById(R.id.movie_linear_layout);
+            mCardView = itemView.findViewById(R.id.movie_card_view);
         }
     }
 

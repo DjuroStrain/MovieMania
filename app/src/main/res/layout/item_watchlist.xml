@@ -96,6 +96,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="100dp"
             android:text="No results"
+            android:visibility="gone"
             android:textSize="15pt"
             android:gravity="center"
             />
