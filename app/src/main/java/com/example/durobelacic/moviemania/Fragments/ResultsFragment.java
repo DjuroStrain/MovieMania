@@ -66,7 +66,7 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
     ProgressBar progressBar;
     LinearLayout errorLayout;
     Button btnRetry;
-    TextView txtError, txtNoResults ;
+    TextView txtError;
     SwipeRefreshLayout swipeRefreshLayout;
     Context mContext;
     String sUser;
@@ -80,13 +80,8 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
 
     private static final int TOTAL_PAGES = 10;
     private int currentPage = PAGE_START;
-    private int nCounter = 0;
-
 
     private MovieService movieService;
-
-    private Set<Result> results1 = new HashSet<>();
-
 
     public ResultsFragment() {
         // Required empty public constructor
@@ -206,7 +201,6 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
 
         loadFirstPage();
     }
-
 
     private List<Result> fetchResult(Response<TopRatedMovies> response) {
         TopRatedMovies topRatedMovies = response.body();

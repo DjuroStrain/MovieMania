@@ -15,7 +15,7 @@ public class Genres {
     /**
      *
      * @return
-     * The results
+     * The genres
      */
     public List<GenresResults> getGenreResults() {
         return genres;
@@ -24,7 +24,7 @@ public class Genres {
     /**
      *
      * @param results
-     * The results
+     * The genres
      */
     public void setGenreResults(List<GenresResults> results) {
         this.genres = results;

@@ -81,15 +81,6 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
     private int currentPage = PAGE_START;
     private int nCounter = 0;
 
-
-    private MovieService movieService;
-
-    private Set<Result> results1 = new HashSet<>();
-
-    public List<Result> resultList = new ArrayList<>();
-    private FirebaseDatabase database;
-    private DatabaseReference reference;
-
     public WatchlistFragment() {
         // Required empty public constructor
     }
@@ -142,8 +133,6 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-
-        movieService = MovieAPI.getClient(getContext()).create(MovieService.class);
 
         if (isAdded() && isVisible() && getUserVisibleHint()) {
             recyclerView.setAdapter(adapter);

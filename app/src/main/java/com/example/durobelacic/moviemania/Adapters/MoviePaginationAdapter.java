@@ -70,10 +70,7 @@ public class MoviePaginationAdapter extends RecyclerView.Adapter<RecyclerView.Vi
 
     private String errorMsg;
 
-    MovieManiaActivity movieManiaActivity;
-
     private RequestManager glide;
-    private FragmentManager fragmentManager;
 
     private BottomSheetDialog bottomSheetDialog;
     private View view;
@@ -166,30 +163,10 @@ public class MoviePaginationAdapter extends RecyclerView.Adapter<RecyclerView.Vi
                             .centerCrop()
                             .into(movieVH.mPosterImg);
 
-                    // load movie thumbnail
-               /* loadImage(result.getPosterPath())
-                        .listener(new RequestListener<Drawable>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                // TODO: 2/16/19 Handle failure
-                                movieVH.mProgress.setVisibility(View.GONE);
-                                return false;
-                            }
-
-                            @Override
-                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                // image ready, hide progress now
-                                movieVH.mProgress.setVisibility(View.GONE);
-                                return false;   // return false if you want Glide to handle everything else.
-                            }
-                        })
-                        .into(movieVH.mPosterImg);*/
-
                 break;
 
             case LOADING:
                 LoadingVH loadingVH = (LoadingVH) holder;
-                System.out.println("uslo");
                 if (retryPageLoad) {
                     loadingVH.mErrorLayout.setVisibility(View.VISIBLE);
                     loadingVH.mProgressBar.setVisibility(View.GONE);
@@ -209,9 +186,6 @@ public class MoviePaginationAdapter extends RecyclerView.Adapter<RecyclerView.Vi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
-                //View view = LayoutInflater.from(context).inflate(R.layout.movie_details_dialog, null);
                 bottomSheetDialog.setContentView(view);
                 bottomSheetDialog.show();
 

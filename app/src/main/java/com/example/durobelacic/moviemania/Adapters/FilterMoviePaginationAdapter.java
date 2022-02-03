@@ -65,7 +65,6 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
 
     private boolean isLoadingAdded = false;
     private boolean retryPageLoad = false;
-    private boolean isVisible = false;
 
     private MoviePaginationAdapterCallback mCallback;
 
@@ -81,7 +80,6 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
     private List<Result> filteredMovies = new ArrayList<>();
 
     private Integer totalPages;
-    private Integer currentPage2;
 
     public FilterMoviePaginationAdapter(Context context, RequestManager glide, BottomSheetDialog bottomSheetDialog, View view, String user, String keyword,
                                         String year, String lang, String genre, int totalPages) {
@@ -192,10 +190,6 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
                 if(filteredMovies.isEmpty())
                 {
                     noItemVH.txtNoResults.setVisibility(View.VISIBLE);
-//                    noItemVH.mMovieDesc.setVisibility(View.GONE);
-//                    noItemVH.mMovieTitle.setVisibility(View.GONE);
-//                    noItemVH.mPosterImg.setVisibility(View.GONE);
-//                    noItemVH.mYear.setVisibility(View.GONE);
                     noItemVH.mPosterImg.setVisibility(View.GONE);
                     noItemVH.mLinearLayout.setVisibility(View.GONE);
                     noItemVH.mProgressBar.setVisibility(View.GONE);
@@ -230,15 +224,11 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
                                 .into(noItemVH.mPosterImg);
                     }
                 }
-                System.out.println("NO_ITEM");
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
-                //View view = LayoutInflater.from(context).inflate(R.layout.movie_details_dialog, null);
                 bottomSheetDialog.setContentView(view);
                 bottomSheetDialog.show();
 
@@ -285,7 +275,6 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
     @Override
     public int getItemViewType(int position) {
         int recordsNum = totalPages * 20;
-        int moviewNum = position + 1;
         if (position == 0) {
             return ITEM;
         } else if (position == movieResults.size() - 1 && isLoadingAdded){
@@ -335,22 +324,6 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
         holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
     }
 
-//    private DrawableRequestBuilder<String> loadImage(@NonNull String posterPath) {
-//        return Glide
-//                .with(context)
-//                .load(BASE_URL_IMG + posterPath)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-//                .centerCrop()
-//                .crossFade();
-
-//    }
-   /* private GlideRequest<Drawable> loadImage(@NonNull String posterPath) {
-        return GlideApp
-                .with(context)
-                .load(BASE_URL_IMG + posterPath)
-                .centerCrop();
-    }*/
-
     /*
         Helpers - Pagination
    _________________________________________________________________________________________________
@@ -393,24 +366,12 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
         return getItemCount() == 0;
     }
 
-    public void getCurrentPage(int currentPage){
-        currentPage2 = currentPage;
-    }
-
     public void addLoadingFooter() {
         isLoadingAdded = true;
     }
 
     public void removeLoadingFooter() {
         isLoadingAdded = false;
-
-//        int position = movieResults.size() - 1;
-//        Result result = getItem(position);
-//
-//        if (result != null) {
-//            movieResults.remove(position);
-//            notifyItemRemoved(position);
-//        }
     }
 
     public Result getItem(int position) {

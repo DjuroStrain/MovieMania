@@ -52,7 +52,6 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     // View Types
     private static final int ITEM = 0;
     private static final int LOADING = 1;
-    private static final int NoItem = 2;
 
     private static final String BASE_URL_IMG = "https://image.tmdb.org/t/p/w200";
 
@@ -70,7 +69,6 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private String errorMsg;
 
-    MovieManiaActivity movieManiaActivity;
     WatchlistFragment watchlistFragment;
 
     private BottomSheetDialog bottomSheetDialog;
@@ -191,9 +189,6 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
-                //View view = LayoutInflater.from(context).inflate(R.layout.movie_details_dialog, null);
                 bottomSheetDialog.setContentView(view);
                 bottomSheetDialog.show();
 
@@ -283,22 +278,6 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         holder.itemView.setVisibility(View.GONE);
         holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
     }
-
-//    private DrawableRequestBuilder<String> loadImage(@NonNull String posterPath) {
-//        return Glide
-//                .with(context)
-//                .load(BASE_URL_IMG + posterPath)
-//                .diskCacheStrategy(DiskCacheStrategy.ALL)   // cache both original & resized image
-//                .centerCrop()
-//                .crossFade();
-
-//    }
-   /* private GlideRequest<Drawable> loadImage(@NonNull String posterPath) {
-        return GlideApp
-                .with(context)
-                .load(BASE_URL_IMG + posterPath)
-                .centerCrop();
-    }*/
 
     /*
         Helpers - Pagination

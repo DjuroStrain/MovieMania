@@ -119,8 +119,6 @@ public class MovieManiaFragment extends Fragment implements MoviePaginationAdapt
 
         sUser = bundle.getString("user");
 
-        System.out.println("User: "+sUser);
-
         adapter = new MoviePaginationAdapter(MovieManiaFragment.newInstance().getContext(), Glide.with(this), bottomSheetDialog, view1, sUser);
 
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
@@ -182,29 +180,19 @@ public class MovieManiaFragment extends Fragment implements MoviePaginationAdapt
 //        return super.onOptionsItemSelected(item);
 //    }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//
-//        if(context instanceof Activity){
-//            this.movieManiaActivity = (MovieManiaActivity) context;
-//        }
-//    }
-//
-//    @Override
-//    public void onDetach() {
-//        super.onDetach();
-//        this.movieManiaActivity = null;
-//    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
 
-
-    private void initToolbar() {
-
-        // then use the var in any function
-        if (movieManiaActivity == null) {
-            return;
+        if(context instanceof Activity){
+            this.movieManiaActivity = (MovieManiaActivity) context;
         }
+    }
 
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        this.movieManiaActivity = null;
     }
 
     private void doRefresh(){
@@ -253,7 +241,6 @@ public class MovieManiaFragment extends Fragment implements MoviePaginationAdapt
 
     private void loadNextPage(){
         Log.d(TAG, "loadNextPage: " + currentPage);
-        System.out.println("Puklo sve u ");
 
         callTopRatedMovies().enqueue(new Callback<TopRatedMovies>() {
             @Override

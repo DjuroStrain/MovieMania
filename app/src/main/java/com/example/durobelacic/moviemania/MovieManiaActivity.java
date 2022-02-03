@@ -134,8 +134,6 @@ public class MovieManiaActivity extends AppCompatActivity {
                     drawerLayout.closeDrawer(GravityCompat.START);
                 }
                 else if(id == R.id.nav_filter){
-//                    Intent filterActivityIntent = new Intent(getApplicationContext(), FilterActivity.class);
-//                    startActivity(filterActivityIntent);
                     FilterFragment filterFragment = new FilterFragment();
                     FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction1.replace(R.id.container_view, filterFragment);
@@ -144,8 +142,6 @@ public class MovieManiaActivity extends AppCompatActivity {
                     drawerLayout.closeDrawer(GravityCompat.START);
                 }
                 else if(id == R.id.nav_watchlist){
-//                    Intent filterActivityIntent = new Intent(getApplicationContext(), FilterActivity.class);
-//                    startActivity(filterActivityIntent);
                     WatchlistFragment watchlistFragment = new WatchlistFragment();
                     FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction();
                     fragmentTransaction1.replace(R.id.container_view, watchlistFragment);
@@ -161,15 +157,6 @@ public class MovieManiaActivity extends AppCompatActivity {
                 return true;
             }
         });
-
-//        final Bundle bundle = getIntent().getExtras();
-//        sUser = bundle.getString("user");
-//
-//        Bundle bundle1 = new Bundle();
-//        bundle1.putString("user", sUser);
-//        System.out.println("User: " +sUser);
-//        ResultsFragment resultsFragment = new ResultsFragment();
-//        resultsFragment.setArguments(bundle1);
 
         ResultsFragment resultsFragment = new ResultsFragment();
         Bundle bundle = new Bundle();

@@ -10,7 +10,7 @@ public class Languages2 {
     /**
      *
      * @return
-     * The results
+     * The languages
      */
     public List<LanguagesResults> getLanguageResults() {
         return languages;
@@ -19,7 +19,7 @@ public class Languages2 {
     /**
      *
      * @param results
-     * The results
+     * The languages
      */
     public void setLanguageResults(List<LanguagesResults> results) {
         this.languages = results;

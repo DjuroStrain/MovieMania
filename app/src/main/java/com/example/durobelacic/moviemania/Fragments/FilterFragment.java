@@ -140,29 +140,6 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
             }
         });
 
-        JSONObject response = new JSONObject();
-        try {
-            response = getJsonResponse();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JSONArray array = null;
-        try {
-            array = response.getJSONArray("languages");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        for(int i = 0; i < array.length(); i++){
-            try {
-                lLanguages.add(array.getJSONObject(i).getString("lang"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-
         movieService = MovieAPI.getClient(getActivity()).create(MovieService.class);
 
         autoCompleteGenre = view.findViewById(R.id.autoCompleteTextView3);
@@ -236,50 +213,7 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
 
     }
 
-    public JSONObject getLanguages(String language, String shortLang) throws JSONException {
-        JSONObject languages = new JSONObject();
-        languages.put("lang", language);
-        languages.put("short", shortLang);
-        return  languages;
-    }
-
-    public JSONObject getJsonResponse() throws JSONException {
-        JSONArray languages = new JSONArray();
-        languages.put(getLanguages("English", "en"));
-        languages.put(getLanguages("Hindi", "hi"));
-
-        JSONObject response = new JSONObject();
-        response.put("languages", languages);
-        return response;
-    }
-
     public void addShortLang(String sLang, Bundle bundle){
-//        JSONObject response = new JSONObject();
-//        try {
-//            response = getJsonResponse();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        JSONArray array = null;
-//        try {
-//            array = response.getJSONArray("languages");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        for(int i = 0; i < array.length(); i++){
-//            try {
-//                if(array.getJSONObject(i).getString("lang").equals(sLang))
-//                {
-//                    bundle.putString("lang", array.getJSONObject(i).getString("short"));
-//                    pageViewModel.setLanguage(array.getJSONObject(i).getString("short"));
-//                }
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
         callLanguages().enqueue(new Callback<List<LanguagesResults>>() {
             @Override
             public void onResponse(Call<List<LanguagesResults>> call, Response<List<LanguagesResults>> response) {
