@@ -2,7 +2,6 @@ package com.example.durobelacic.moviemania.Fragments;
 
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,30 +13,19 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 
 import com.example.durobelacic.moviemania.Api.MovieAPI;
 import com.example.durobelacic.moviemania.Api.MovieService;
-import com.example.durobelacic.moviemania.FilterActivity;
 import com.example.durobelacic.moviemania.Models.Genres;
 import com.example.durobelacic.moviemania.Models.GenresResults;
-import com.example.durobelacic.moviemania.Models.Languages;
-import com.example.durobelacic.moviemania.Models.Languages2;
 import com.example.durobelacic.moviemania.Models.LanguagesResults;
-import com.example.durobelacic.moviemania.Models.Result;
-import com.example.durobelacic.moviemania.Models.TopRatedMovies;
 import com.example.durobelacic.moviemania.R;
 import com.example.durobelacic.moviemania.Utils.MoviePaginationAdapterCallback;
 import com.example.durobelacic.moviemania.Utils.PageViewModel;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;

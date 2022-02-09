@@ -14,9 +14,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".FilterActivity"
-            android:exported="false" />
-        <activity
             android:name=".DrawerActivity"
             android:exported="false"
             android:theme="@style/Theme.MovieMania.NoActionBar" />

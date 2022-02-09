@@ -3,15 +3,12 @@ package com.example.durobelacic.moviemania.Fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,17 +20,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.durobelacic.moviemania.Adapters.FilterMoviePaginationAdapter;
 import com.example.durobelacic.moviemania.Api.MovieAPI;
 import com.example.durobelacic.moviemania.Api.MovieService;
-import com.example.durobelacic.moviemania.FilterActivity;
 import com.example.durobelacic.moviemania.Models.Result;
 import com.example.durobelacic.moviemania.Models.TopRatedMovies;
 import com.example.durobelacic.moviemania.R;
@@ -42,12 +36,7 @@ import com.example.durobelacic.moviemania.Utils.PageViewModel;
 import com.example.durobelacic.moviemania.Utils.PaginationScrollListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
 import retrofit2.Call;
