@@ -1,5 +1,6 @@
 package com.example.durobelacic.moviemania;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -157,6 +158,44 @@ public class MovieManiaActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                if(getCurrentFragment().equals("MovieManiaFragment"))
+                {
+                    Intent mainActivityIntent = new Intent(getApplicationContext(), MainActivity.class);
+                    mainActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(mainActivityIntent);
+                }
+                else if(getCurrentFragment().equals("FilterFragment"))
+                {
+                    MovieManiaFragment movieManiaFragment  = new MovieManiaFragment();
+                    FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction2.replace(R.id.container_view, movieManiaFragment);
+                    fragmentTransaction2.addToBackStack(null);
+                    fragmentTransaction2.commit();
+                    navigationView2.getMenu().getItem(0).setChecked(true);
+                }
+                else if (getCurrentFragment().equals("WatchlistFragment")){
+                    MovieManiaFragment movieManiaFragment = new MovieManiaFragment();
+                    FragmentTransaction fragmentTransaction1 = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction1.replace(R.id.container_view, movieManiaFragment);
+                    fragmentTransaction1.addToBackStack(null);
+                    fragmentTransaction1.commit();
+                    navigationView2.getMenu().getItem(0).setChecked(true);
+                }
+                else if(getCurrentFragment().equals("ResultsFragment")) {
+                    FilterFragment filterFragment = new FilterFragment();
+                    FragmentTransaction fragmentTransaction2 = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction2.replace(R.id.container_view, filterFragment);
+                    fragmentTransaction2.addToBackStack(null);
+                    fragmentTransaction2.commit();
+                }
+            }
+        };
+
+        this.getOnBackPressedDispatcher().addCallback(this, callback);
 
         ResultsFragment resultsFragment = new ResultsFragment();
         Bundle bundle = new Bundle();

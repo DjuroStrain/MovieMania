@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -70,6 +71,7 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
     SwipeRefreshLayout swipeRefreshLayout;
     Context mContext;
     String sUser;
+    Integer nBottomRating, nTopRating;
 
     private Activity mActivity;
 
@@ -143,6 +145,10 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
         String sYear = bundle1.getString("year");
         String sLang = bundle1.getString("lang");
         String sGenre = bundle1.getString("genre");
+        String sBottomRating = bundle1.getString("bottomRating");
+        String sTopRating = bundle1.getString("topRating");
+
+        System.out.println("nBottom: "+nBottomRating+", nTop"+nTopRating);
 
         if(sKeyword == null)
         {
@@ -161,15 +167,24 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
             sGenre = "";
         }
 
+        if(sBottomRating == null && sTopRating == null)
+        {
+            nBottomRating = 0;
+            nTopRating = 0;
+        }
+        else {
+            nBottomRating = Integer.parseInt(sBottomRating);
+            nTopRating = Integer.parseInt(sTopRating);
+        }
+
+        movieService = MovieAPI.getClient(getContext()).create(MovieService.class);
+
         adapter = new FilterMoviePaginationAdapter(ResultsFragment.newInstance().mContext, Glide.with(this), bottomSheetDialog, view1,
-                sUser, sKeyword, sYear, sLang, sGenre, TOTAL_PAGES);
+                sUser, sKeyword, sYear, sLang, sGenre, TOTAL_PAGES, nBottomRating, nTopRating, movieService);
         adapter.addLoadingFooter();
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-
-        movieService = MovieAPI.getClient(getContext()).create(MovieService.class);
 
         if (isAdded() && isVisible() && getUserVisibleHint()) {
             recyclerView.setAdapter(adapter);
@@ -352,6 +367,5 @@ public class ResultsFragment extends Fragment implements MoviePaginationAdapterC
     public void retryPageLoad() {
 
     }
-
 
 }

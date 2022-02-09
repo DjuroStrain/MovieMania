@@ -54,10 +54,6 @@ import retrofit2.Response;
 
 public class WatchlistFragment extends Fragment implements MoviePaginationAdapterCallback {
 
-    private PageViewModel pageViewModel;
-
-    private static  final String TAG = "ResultsFragment";
-
     WatchlistAdapter adapter;
     LinearLayoutManager linearLayoutManager;
 
@@ -65,21 +61,14 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
     ProgressBar progressBar;
     LinearLayout errorLayout;
     Button btnRetry;
-    TextView txtError, txtNoResults ;
+    TextView txtError ;
     SwipeRefreshLayout swipeRefreshLayout;
     Context mContext;
     String sUser;
 
+    private MovieService movieService;
+
     private Activity mActivity;
-
-    private final static int PAGE_START = 1;
-
-    private boolean isLoading = false;
-    private boolean isLastPage = false;
-
-    private static final int TOTAL_PAGES = 479;
-    private int currentPage = PAGE_START;
-    private int nCounter = 0;
 
     public WatchlistFragment() {
         // Required empty public constructor
@@ -107,8 +96,6 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
 
-        pageViewModel = new ViewModelProvider(requireActivity()).get(PageViewModel.class);
-
         recyclerView = view.findViewById(R.id.main_recycler);
         progressBar = view.findViewById(R.id.main_progress);
         errorLayout = view.findViewById(R.id.error_layout);
@@ -127,12 +114,15 @@ public class WatchlistFragment extends Fragment implements MoviePaginationAdapte
             adapter.addRemovingFooter();
             adapter.addAll(results);
         });
-        adapter = new WatchlistAdapter(WatchlistFragment.newInstance().mContext, Glide.with(this), bottomSheetDialog, view1, sUser, this);
+
+        movieService = MovieAPI.getClient(getContext()).create(MovieService.class);
+
+        adapter = new WatchlistAdapter(WatchlistFragment.newInstance().mContext, Glide.with(this), bottomSheetDialog, view1, sUser,
+                this, movieService);
         adapter.addLoadingFooter();
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-
 
         if (isAdded() && isVisible() && getUserVisibleHint()) {
             recyclerView.setAdapter(adapter);

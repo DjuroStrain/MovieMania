@@ -2,6 +2,7 @@ package com.example.durobelacic.moviemania.Fragments;
 
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,6 +32,7 @@ import com.example.durobelacic.moviemania.Models.TopRatedMovies;
 import com.example.durobelacic.moviemania.R;
 import com.example.durobelacic.moviemania.Utils.MoviePaginationAdapterCallback;
 import com.example.durobelacic.moviemania.Utils.PageViewModel;
+import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.json.JSONArray;
@@ -55,10 +57,11 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
     ArrayList<String> lYears = new ArrayList<>();
     ArrayList<String> lLanguages = new ArrayList<>();
     ArrayList<String> lGenres = new ArrayList<>();
+    ArrayList<String> lRatings = new ArrayList<>();
     List<LanguagesResults> lLanguagesResult = new ArrayList<>();
 
-    AutoCompleteTextView autoCompleteYear, autoCompleteLang, autoCompleteGenre;
-    ArrayAdapter<String> adapterItemYears, adapterItemLang, adapterItemGenre;
+    AutoCompleteTextView autoCompleteYear, autoCompleteLang, autoCompleteGenre, autoCompleteRating;
+    ArrayAdapter<String> adapterItemYears, adapterItemLang, adapterItemGenre, adapterItemRating;
 
     private MovieService movieService;
 
@@ -76,7 +79,6 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
 
         super.onCreate(savedInstanceState);
         pageViewModel = new ViewModelProvider(this).get(PageViewModel.class);
-
     }
 
     @Override
@@ -86,6 +88,7 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
         lYears.clear();
         lGenres.clear();
         lLanguages.clear();
+        lRatings.clear();
         return inflater.inflate(R.layout.fragment_filter, container, false);
     }
 
@@ -95,32 +98,11 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
 
         Bundle bundle = new Bundle();
 
-        pageViewModel = new ViewModelProvider(requireActivity()).get(PageViewModel.class);
-        pageViewModel.setYear("");
-        pageViewModel.setKeyword("");
-        pageViewModel.setLanguage("");
-        pageViewModel.setGenre("");
-
         lYears.clear();
         lGenres.clear();
         lLanguages.clear();
 
         sKeyword = view.findViewById(R.id.txtKeyword2);
-
-        int thisYear = Calendar.getInstance().get(Calendar.YEAR);
-        for(int i = thisYear; i >= 1900; i--){
-            lYears.add(Integer.toString(i));
-        }
-
-        autoCompleteYear = view.findViewById(R.id.autoCompleteTextView);
-        adapterItemYears = new ArrayAdapter<>(this.getActivity(), R.layout.dropdown_item, lYears);
-
-        autoCompleteYear.setAdapter(adapterItemYears);
-
-        autoCompleteYear.setOnItemClickListener((parent, view1, position, id) -> {
-            bundle.putString("year", parent.getItemAtPosition(position).toString());
-            pageViewModel.setYear(parent.getItemAtPosition(position).toString());
-        });
 
         sKeyword.addTextChangedListener(new TextWatcher() {
             @Override
@@ -136,13 +118,26 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
             @Override
             public void afterTextChanged(Editable s) {
                 bundle.putString("keyword", s.toString());
-                pageViewModel.setKeyword(s.toString());
             }
+        });
+
+        int thisYear = Calendar.getInstance().get(Calendar.YEAR);
+        for(int i = thisYear; i >= 1900; i--){
+            lYears.add(Integer.toString(i));
+        }
+
+        autoCompleteYear = view.findViewById(R.id.autoCompleteTextViewYear);
+        adapterItemYears = new ArrayAdapter<>(this.getActivity(), R.layout.dropdown_item, lYears);
+
+        autoCompleteYear.setAdapter(adapterItemYears);
+
+        autoCompleteYear.setOnItemClickListener((parent, view1, position, id) -> {
+            bundle.putString("year", parent.getItemAtPosition(position).toString());
         });
 
         movieService = MovieAPI.getClient(getActivity()).create(MovieService.class);
 
-        autoCompleteGenre = view.findViewById(R.id.autoCompleteTextView3);
+        autoCompleteGenre = view.findViewById(R.id.autoCompleteTextViewGenre);
         callGenres().enqueue(new Callback<Genres>() {
             @Override
             public void onResponse(Call<Genres> call, Response<Genres> response) {
@@ -159,7 +154,6 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
                     for (GenresResults results : genresResults){
                         if(results.getName().equalsIgnoreCase(parent.getItemAtPosition(position).toString())){
                             bundle.putString("genre", String.valueOf(results.getId()));
-                            pageViewModel.setGenre(String.valueOf(results.getId()));
                         }
                     }
                 });
@@ -181,7 +175,7 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
                     lLanguages.add(result.getEnglishName());
                 }
 
-                autoCompleteLang = view.findViewById(R.id.autoCompleteTextView2);
+                autoCompleteLang = view.findViewById(R.id.autoCompleteTextViewLang);
                 adapterItemLang = new ArrayAdapter<>(getActivity(), R.layout.dropdown_item, lLanguages);
                 autoCompleteLang.setAdapter(adapterItemLang);
 
@@ -198,6 +192,32 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
             }
         });
 
+        String sRating = "";
+        for(int i = 10; i >= 0 ; i--)
+        {
+            sRating = (i-1)+ " - " + i;
+            lRatings.add(sRating);
+        }
+
+        autoCompleteRating = view.findViewById(R.id.autoCompleteTextViewRating);
+
+        adapterItemRating = new ArrayAdapter<>(this.getActivity(), R.layout.dropdown_item, lRatings);
+        autoCompleteRating.setAdapter(adapterItemRating);
+
+        autoCompleteRating.setOnItemClickListener((parent, view13, position, id) -> {
+            if(parent.getItemAtPosition(position).toString().equals("9 - 10")){
+                String sFirst = parent.getItemAtPosition(position).toString().substring(0, 1);
+                String sSecond = parent.getItemAtPosition(position).toString().substring(4, 6);
+                bundle.putString("bottomRating", sFirst);
+                bundle.putString("topRating", sSecond);
+            }
+            else{
+                String sFirst = parent.getItemAtPosition(position).toString().substring(0, 1);
+                String sSecond = parent.getItemAtPosition(position).toString().substring(4, 5);
+                bundle.putString("bottomRating", sFirst);
+                bundle.putString("topRating", sSecond);
+            }
+        });
 
         btnFilter = view.findViewById(R.id.btnFilter);
         btnFilter.setOnClickListener(v -> {
@@ -210,7 +230,6 @@ public class FilterFragment extends Fragment implements MoviePaginationAdapterCa
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         });
-
     }
 
     public void addShortLang(String sLang, Bundle bundle){

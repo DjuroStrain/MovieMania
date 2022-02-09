@@ -27,8 +27,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.durobelacic.moviemania.Api.MovieService;
 import com.example.durobelacic.moviemania.Fragments.ResultsFragment;
 import com.example.durobelacic.moviemania.Fragments.WatchlistFragment;
+import com.example.durobelacic.moviemania.Models.Genres;
+import com.example.durobelacic.moviemania.Models.GenresResults;
 import com.example.durobelacic.moviemania.Models.Result;
 import com.example.durobelacic.moviemania.MovieManiaActivity;
 import com.example.durobelacic.moviemania.R;
@@ -46,6 +49,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
@@ -74,13 +81,15 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private BottomSheetDialog bottomSheetDialog;
     private View view;
     private String user;
+    private MovieService movieService;
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
 
     private List<Result> watchlist = new ArrayList<>();
 
-    public WatchlistAdapter(Context context, RequestManager glide, BottomSheetDialog bottomSheetDialog, View view, String user, WatchlistFragment watchlistFragment) {
+    public WatchlistAdapter(Context context, RequestManager glide, BottomSheetDialog bottomSheetDialog, View view, String user,
+                            WatchlistFragment watchlistFragment, MovieService movieService) {
         this.context = context;
         this.mCallback = (MoviePaginationAdapterCallback) context;
         movieResults = new ArrayList<>();
@@ -89,6 +98,7 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         this.view = view;
         this.user = user;
         this.watchlistFragment = watchlistFragment;
+        this.movieService = movieService;
     }
 
     public List<Result> getMovieResults() {
@@ -196,6 +206,8 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 TextView movieYear = view.findViewById(R.id.movie_year);
                 TextView movieLang = view.findViewById(R.id.movie_lang);
                 TextView movieDesc = view.findViewById(R.id.movie_desc);
+                TextView movieRating = view.findViewById(R.id.mRating);
+                TextView movieGenres = view.findViewById(R.id.mGenres);
                 Button btnRemoveFromList = view.findViewById(R.id.btnRemoveFromList);
 
                 movieDesc.setMovementMethod(new ScrollingMovementMethod());
@@ -204,6 +216,36 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 movieYear.setText(formatYearLabelYear(result));
                 movieLang.setText(result.getOriginalLanguage().toUpperCase());
                 movieDesc.setText(result.getOverview());
+                movieRating.setText(result.getVoteAverage().toString()+"/10");
+
+                List<String> lGenres = new ArrayList<>();
+                callGenres().enqueue(new Callback<Genres>() {
+                    @Override
+                    public void onResponse(Call<Genres> call, Response<Genres> response) {
+                        List<GenresResults> genresResults = fetchResult(response);
+
+                        for(GenresResults result1 : genresResults){
+                            if(result.getGenreIds().contains(result1.getId()))
+                            {
+                                lGenres.add(result1.getName());
+                            }
+                        }
+                        String sGenres = "";
+                        for(String genre : lGenres){
+                            sGenres += genre + ", ";
+                        }
+
+                        System.out.println(sGenres);
+
+                        sGenres = sGenres.replaceAll(", $", "");
+                        movieGenres.setText(sGenres);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Genres> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
 
                 RoundedImageView roundedImageView = view.findViewById(R.id.mPosterImg);
                 glide
@@ -343,12 +385,6 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         return movieResults.get(position);
     }
 
-    /**
-     * Displays Pagination retry footer view along with appropriate errorMsg
-     *
-     * @param show
-     * @param errorMsg to display if page load fails
-     */
     public void showRetry(boolean show, @Nullable String errorMsg) {
         retryPageLoad = show;
         notifyItemChanged(movieResults.size() - 1);
@@ -429,6 +465,15 @@ public class WatchlistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     break;
             }
         }
+    }
+
+    private Call<Genres> callGenres(){
+        return movieService.getGenres();
+    }
+
+    private List<GenresResults> fetchResult(Response<Genres> response) {
+        Genres genres = response.body();
+        return genres.getGenreResults();
     }
 }
 

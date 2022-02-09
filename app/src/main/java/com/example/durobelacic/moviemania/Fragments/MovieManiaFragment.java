@@ -80,7 +80,6 @@ public class MovieManiaFragment extends Fragment implements MoviePaginationAdapt
     private MovieManiaActivity movieManiaActivity;
 
     public MovieManiaFragment() {
-        // Required empty public constructor
     }
 
     public static MovieManiaFragment newInstance() {
@@ -119,7 +118,10 @@ public class MovieManiaFragment extends Fragment implements MoviePaginationAdapt
 
         sUser = bundle.getString("user");
 
-        adapter = new MoviePaginationAdapter(MovieManiaFragment.newInstance().getContext(), Glide.with(this), bottomSheetDialog, view1, sUser);
+        movieService = MovieAPI.getClient(getContext()).create(MovieService.class);
+
+        adapter = new MoviePaginationAdapter(MovieManiaFragment.newInstance().getContext(), Glide.with(this), bottomSheetDialog, view1,
+                sUser, movieService);
 
         linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -151,8 +153,6 @@ public class MovieManiaFragment extends Fragment implements MoviePaginationAdapt
                 return isLoading;
             }
         });
-
-        movieService = MovieAPI.getClient(getContext()).create(MovieService.class);
 
         loadFirstPage();
 
@@ -312,7 +312,6 @@ public class MovieManiaFragment extends Fragment implements MoviePaginationAdapt
         }
         else
         {
-            System.out.println("false je");
             return false;
         }
     }

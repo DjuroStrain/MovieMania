@@ -25,7 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.durobelacic.moviemania.Api.MovieService;
 import com.example.durobelacic.moviemania.Fragments.ResultsFragment;
+import com.example.durobelacic.moviemania.Models.Genres;
+import com.example.durobelacic.moviemania.Models.GenresResults;
 import com.example.durobelacic.moviemania.Models.Result;
 import com.example.durobelacic.moviemania.MovieManiaActivity;
 import com.example.durobelacic.moviemania.R;
@@ -48,7 +51,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.makeramen.roundedimageview.RoundedImageView;
 
-public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements MoviePaginationAdapterCallback{
 
     // View Types
     private static final int ITEM = 0;
@@ -65,6 +72,7 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
 
     private boolean isLoadingAdded = false;
     private boolean retryPageLoad = false;
+    private boolean isVisible = false;
 
     private MoviePaginationAdapterCallback mCallback;
 
@@ -73,16 +81,20 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
     private BottomSheetDialog bottomSheetDialog;
     private View view;
     private String user, keyword, year, lang, genre;
+    private Integer bottomRating, topRating;
+    private MovieService movieService;
 
     private FirebaseDatabase database;
     private DatabaseReference reference;
 
     private List<Result> filteredMovies = new ArrayList<>();
 
+    private List<Result> lastMovie = new ArrayList<>();
+
     private Integer totalPages;
 
     public FilterMoviePaginationAdapter(Context context, RequestManager glide, BottomSheetDialog bottomSheetDialog, View view, String user, String keyword,
-                                        String year, String lang, String genre, int totalPages) {
+                                        String year, String lang, String genre, int totalPages, int bottomRating, int topRating, MovieService movieService) {
         this.context = context;
         this.mCallback = (MoviePaginationAdapterCallback) context;
         movieResults = new ArrayList<>();
@@ -95,6 +107,9 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
         this.lang = lang;
         this.genre = genre;
         this.totalPages = totalPages;
+        this.bottomRating = bottomRating;
+        this.topRating = topRating;
+        this.movieService = movieService;
     }
 
     public List<Result> getMovieResults() {
@@ -130,38 +145,74 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Result result = movieResults.get(position); // Movie
-        int nPosition = position;
+        int recordsNum = totalPages * 20;
+        System.out.println("bottom: "+bottomRating+", top: "+topRating);
         switch (getItemViewType(position)) {
             case ITEM:
-                if(result.getTitle().toLowerCase().trim().contains(keyword.trim()) && formatYearLabelYear(result).trim().contains(year.trim()) && result.getOriginalLanguage().trim().contains(lang.trim())
-                        && result.getGenreIds().toString().trim().contains(genre.trim()))
+                if(topRating != 0)
                 {
-                    filteredMovies.add(result);
-                    final MovieVH movieVH = (MovieVH) holder;
-                    movieVH.mMovieTitle.setText(result.getTitle());
-                    movieVH.mYear.setText(formatYearLabel(result));
-                    movieVH.mMovieDesc.setText(result.getOverview());
+                    if(result.getTitle().toLowerCase().trim().contains(keyword.toLowerCase().trim()) && formatYearLabelYear(result).trim().contains(year.trim()) && result.getOriginalLanguage().trim().contains(lang.trim())
+                            && result.getGenreIds().toString().trim().contains(genre.trim()) && result.getVoteAverage() > bottomRating && result.getVoteAverage() < topRating)
+                    {
+                        filteredMovies.add(result);
+                        final MovieVH movieVH = (MovieVH) holder;
+                        movieVH.mMovieTitle.setText(result.getTitle());
+                        movieVH.mYear.setText(formatYearLabel(result));
+                        movieVH.mMovieDesc.setText(result.getOverview());
 
-                    glide
-                            .load(BASE_URL_IMG + result.getPosterPath())
-                            .listener(new RequestListener<Drawable>() {
-                                @Override
-                                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                    movieVH.mProgress.setVisibility(View.GONE);
-                                    return false;
-                                }
+                        glide
+                                .load(BASE_URL_IMG + result.getPosterPath())
+                                .listener(new RequestListener<Drawable>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                        movieVH.mProgress.setVisibility(View.GONE);
+                                        return false;
+                                    }
 
-                                @Override
-                                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                    movieVH.mProgress.setVisibility(View.GONE);
-                                    return false;
-                                }
-                            }).diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .centerCrop()
-                            .into(movieVH.mPosterImg);
+                                    @Override
+                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                        movieVH.mProgress.setVisibility(View.GONE);
+                                        return false;
+                                    }
+                                }).diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .centerCrop()
+                                .into(movieVH.mPosterImg);
+                    }
+                    else{
+                        setVisibility(holder);
+                    }
                 }
                 else{
-                    setVisibility(holder);
+                    if(result.getTitle().toLowerCase().trim().contains(keyword.toLowerCase().trim()) && formatYearLabelYear(result).trim().contains(year.trim()) && result.getOriginalLanguage().trim().contains(lang.trim())
+                            && result.getGenreIds().toString().trim().contains(genre.trim()) && result.getVoteAverage() > bottomRating)
+                    {
+                        filteredMovies.add(result);
+                        final MovieVH movieVH = (MovieVH) holder;
+                        movieVH.mMovieTitle.setText(result.getTitle());
+                        movieVH.mYear.setText(formatYearLabel(result));
+                        movieVH.mMovieDesc.setText(result.getOverview());
+
+                        glide
+                                .load(BASE_URL_IMG + result.getPosterPath())
+                                .listener(new RequestListener<Drawable>() {
+                                    @Override
+                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                        movieVH.mProgress.setVisibility(View.GONE);
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                        movieVH.mProgress.setVisibility(View.GONE);
+                                        return false;
+                                    }
+                                }).diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .centerCrop()
+                                .into(movieVH.mPosterImg);
+                    }
+                    else{
+                        setVisibility(holder);
+                    }
                 }
                 break;
 
@@ -183,11 +234,24 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
                 break;
             case NO_ITEM:
                 NoItemVH noItemVH = (NoItemVH) holder;
-                if(result.getTitle().toLowerCase().trim().contains(keyword.trim()) && formatYearLabelYear(result).trim().contains(year.trim()) && result.getOriginalLanguage().trim().contains(lang.trim())
-                        && result.getGenreIds().toString().trim().contains(genre.trim())) {
-                    filteredMovies.add(result);
+                if(topRating != 0)
+                {
+                    if(result.getTitle().toLowerCase().trim().contains(keyword.toLowerCase().trim()) && formatYearLabelYear(result).trim().contains(year.trim()) && result.getOriginalLanguage().trim().contains(lang.trim())
+                            && result.getGenreIds().toString().trim().contains(genre.trim()) && result.getVoteAverage() > bottomRating && result.getVoteAverage() < topRating) {
+                        lastMovie.add(result);
+                        System.out.println("title: "+result.getTitle());
+                    }
                 }
-                if(filteredMovies.isEmpty())
+                else
+                {
+                    if(result.getTitle().toLowerCase().trim().contains(keyword.toLowerCase().trim()) && formatYearLabelYear(result).trim().contains(year.trim()) && result.getOriginalLanguage().trim().contains(lang.trim())
+                            && result.getGenreIds().toString().trim().contains(genre.trim()) && result.getVoteAverage() > bottomRating) {
+                        lastMovie.add(result);
+                        System.out.println("title: "+result.getTitle());
+                    }
+                }
+
+                if(filteredMovies.isEmpty() && lastMovie.isEmpty())
                 {
                     noItemVH.txtNoResults.setVisibility(View.VISIBLE);
                     noItemVH.mPosterImg.setVisibility(View.GONE);
@@ -195,40 +259,51 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
                     noItemVH.mProgressBar.setVisibility(View.GONE);
                     noItemVH.mCardView.setVisibility(View.GONE);
                 }
-                else
+                else if(lastMovie.size() == 1)
                 {
-                    noItemVH.txtNoResults.setVisibility(View.GONE);
+                        noItemVH.txtNoResults.setVisibility(View.GONE);
 
-                    for(Result result1 : filteredMovies){
+                        for(Result result1 : lastMovie){
+                            System.out.println("Title: "+result1.getTitle());
+                            noItemVH.mMovieTitle.setText(result1.getTitle());
+                            noItemVH.mYear.setText(formatYearLabel(result1));
+                            noItemVH.mMovieDesc.setText(result1.getOverview());
 
-                        noItemVH.mMovieTitle.setText(result1.getTitle());
-                        noItemVH.mYear.setText(formatYearLabel(result1));
-                        noItemVH.mMovieDesc.setText(result1.getOverview());
+                            glide
+                                    .load(BASE_URL_IMG + result1.getPosterPath())
+                                    .listener(new RequestListener<Drawable>() {
+                                        @Override
+                                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                            //.mProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
 
-                        glide
-                                .load(BASE_URL_IMG + result1.getPosterPath())
-                                .listener(new RequestListener<Drawable>() {
-                                    @Override
-                                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
-                                        //noItemVH.mProgress.setVisibility(View.GONE);
-                                        return false;
-                                    }
-
-                                    @Override
-                                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
-                                        //noItemVH.mProgress.setVisibility(View.GONE);
-                                        return false;
-                                    }
-                                }).diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .centerCrop()
-                                .into(noItemVH.mPosterImg);
-                    }
+                                        @Override
+                                        public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                            //noItemVH.mProgress.setVisibility(View.GONE);
+                                            return false;
+                                        }
+                                    }).diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .centerCrop()
+                                    .into(noItemVH.mPosterImg);
+                        }
                 }
+                else {
+                    noItemVH.txtNoResults.setVisibility(View.GONE);
+                    noItemVH.mPosterImg.setVisibility(View.GONE);
+                    noItemVH.mLinearLayout.setVisibility(View.GONE);
+                    noItemVH.mProgressBar.setVisibility(View.GONE);
+                    noItemVH.mCardView.setVisibility(View.GONE);
+                }
+                System.out.println("NO_ITEM");
         }
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
+                //View view = LayoutInflater.from(context).inflate(R.layout.movie_details_dialog, null);
                 bottomSheetDialog.setContentView(view);
                 bottomSheetDialog.show();
 
@@ -236,6 +311,8 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
                 TextView movieYear = view.findViewById(R.id.movie_year);
                 TextView movieLang = view.findViewById(R.id.movie_lang);
                 TextView movieDesc = view.findViewById(R.id.movie_desc);
+                TextView movieRating = view.findViewById(R.id.mRating);
+                TextView movieGenres = view.findViewById(R.id.mGenres);
                 Button btnAddToList = view.findViewById(R.id.btnAddToList);
 
                 movieDesc.setMovementMethod(new ScrollingMovementMethod());
@@ -244,6 +321,34 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
                 movieYear.setText(formatYearLabelYear(result));
                 movieLang.setText(result.getOriginalLanguage().toUpperCase());
                 movieDesc.setText(result.getOverview());
+                movieRating.setText(result.getVoteAverage().toString()+"/10");
+
+                List<String> lGenres = new ArrayList<>();
+                callGenres().enqueue(new Callback<Genres>() {
+                    @Override
+                    public void onResponse(Call<Genres> call, Response<Genres> response) {
+                        List<GenresResults> genresResults = fetchResult(response);
+
+                        for(GenresResults result1 : genresResults){
+                            if(result.getGenreIds().contains(result1.getId()))
+                            {
+                                lGenres.add(result1.getName());
+                            }
+                        }
+                        String sGenres = "";
+                        for(String genre : lGenres){
+                            sGenres += genre + ", ";
+                        }
+
+                        sGenres = sGenres.replaceAll(", $", "");
+                        movieGenres.setText(sGenres);
+                    }
+
+                    @Override
+                    public void onFailure(Call<Genres> call, Throwable t) {
+                        t.printStackTrace();
+                    }
+                });
 
                 RoundedImageView roundedImageView = view.findViewById(R.id.mPosterImg);
                 glide
@@ -275,17 +380,17 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
     @Override
     public int getItemViewType(int position) {
         int recordsNum = totalPages * 20;
+        int moviewNum = position + 1;
         if (position == 0) {
             return ITEM;
-        } else if (position == movieResults.size() - 1 && isLoadingAdded){
+        } else if (position == movieResults.size() - 1 && isLoadingAdded) {
             return LOADING;
-        } else if (position == recordsNum - 1){
+        } else if (position == recordsNum - 1) {
             return NO_ITEM;
         } else {
             return ITEM;
         }
     }
-
     /*
         Helperi
    _________________________________________________________________________________________________
@@ -316,18 +421,11 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
         return year;
     }
 
-    /*
-    *
-    * */
     public void setVisibility(RecyclerView.ViewHolder holder){
         holder.itemView.setVisibility(View.GONE);
         holder.itemView.setLayoutParams(new RecyclerView.LayoutParams(0, 0));
     }
 
-    /*
-        Helpers - Pagination
-   _________________________________________________________________________________________________
-    */
 
     public void add(Result r) {
         if(!movieResults.contains(r))
@@ -366,6 +464,7 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
         return getItemCount() == 0;
     }
 
+
     public void addLoadingFooter() {
         isLoadingAdded = true;
     }
@@ -378,17 +477,16 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
         return movieResults.get(position);
     }
 
-    /**
-     * Displays Pagination retry footer view along with appropriate errorMsg
-     *
-     * @param show
-     * @param errorMsg to display if page load fails
-     */
     public void showRetry(boolean show, @Nullable String errorMsg) {
         retryPageLoad = show;
         notifyItemChanged(movieResults.size() - 1);
 
         if (errorMsg != null) this.errorMsg = errorMsg;
+    }
+
+    @Override
+    public void retryPageLoad() {
+
     }
 
    /*
@@ -472,5 +570,14 @@ public class FilterMoviePaginationAdapter extends RecyclerView.Adapter<RecyclerV
                     break;
             }
         }
+    }
+
+    private Call<Genres> callGenres(){
+        return movieService.getGenres();
+    }
+
+    private List<GenresResults> fetchResult(Response<Genres> response) {
+        Genres genres = response.body();
+        return genres.getGenreResults();
     }
 }

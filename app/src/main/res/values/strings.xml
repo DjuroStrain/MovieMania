@@ -34,6 +34,7 @@
     <string name="filter_keyword">Keyword</string>
     <string name="filter_language">Language</string>
     <string name="filter_genre">Genre</string>
+    <string name="filter_rating">Rating</string>
     <string name="btn_browse">Browse</string>
     <string name="btn_add_watchlist">Add to watchlist</string>
     <string name="btn_remove_watchlist">Remove from watchlist</string>
