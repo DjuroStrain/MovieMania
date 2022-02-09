@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_top_rated"
+            android:icon="@drawable/ic_stars"
+            android:title="@string/menu_top_rated" />
+        <item
+            android:id="@+id/nav_filter"
+            android:icon="@drawable/ic_search"
+            android:title="@string/menu_filter" />
+        <item
+            android:id="@+id/nav_watchlist"
+            android:icon="@drawable/ic_baseline_watch_later_24"
+            android:title="@string/menu_watchlist" />
+        <item
+            android:id="@+id/nav_log_out"
+            android:icon="@drawable/ic_exit"
+            android:title="@string/menu_log_out" />
+    </group>
+</menu>

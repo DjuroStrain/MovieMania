@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_top_rated">
+
+    <fragment
+        android:id="@+id/nav_top_rated"
+        android:name="com.example.durobelacic.moviemania.ui.home.HomeFragment"
+        android:label="@string/menu_top_rated"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_filter"
+        android:name="com.example.durobelacic.moviemania.ui.gallery.GalleryFragment"
+        android:label="@string/menu_filter"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_log_out"
+        android:name="com.example.durobelacic.moviemania.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_log_out"
+        tools:layout="@layout/fragment_slideshow" />
+</navigation>

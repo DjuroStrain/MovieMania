@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.12072368421052632" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/backPic.xml" value="0.15572916666666667" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/backpic.xml" value="0.15572916666666667" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/border_radius.xml" value="0.15572916666666667" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/bottom_sheet_background.xml" value="0.1" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/ic_launcher_background.xml" value="0.12072368421052632" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/ic_launcher_moviemania2_foreground.xml" value="0.12072368421052632" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/ic_launcher_moviemania_foreground.xml" value="0.12072368421052632" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/ic_search.xml" value="0.16145833333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/ic_stars.xml" value="0.16145833333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/scrim.xml" value="0.15572916666666667" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/drawable/shape_retry_round_selected.xml" value="0.15572916666666667" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/activity_drawer.xml" value="0.19927536231884058" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/activity_filter.xml" value="0.12760416666666666" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/activity_main.xml" value="0.12552083333333333" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/activity_movie_mania.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/app_bar_drawer.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/content_drawer.xml" value="0.19927536231884058" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/dropdown_item.xml" value="0.12760416666666666" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/error_layout.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_filter.xml" value="0.16695652727729227" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_gallery.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_home.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_login.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_movie_dialog.xml" value="0.1" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_movie_mania.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_register.xml" value="0.19293478260869565" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_results.xml" value="0.18365218000502148" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_slideshow.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/fragment_watchlist.xml" value="0.11052631578947368" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/item_hero.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/item_list.xml" value="0.2086956590966153" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/item_progress.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/item_top.xml" value="0.2754782700075322" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/item_watchlist.xml" value="0.1" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/movie_details_dialog.xml" value="0.2086956590966153" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/movie_details_dialog_watchlist.xml" value="0.2086956590966153" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/nav_activity_filter.xml" value="0.15026087454956302" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/nav_activity_moivemania.xml" value="0.19927536231884058" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/nav_header_drawer.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/no_item.xml" value="0.1" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/layout/toolbar.xml" value="0.2754782700075322" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/menu/activity_main_drawer.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/menu/drawer.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/menu/menu_main.xml" value="0.13958333333333334" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/mipmap-anydpi-v26/ic_launcher_moviemania.xml" value="0.12072368421052632" />
+        <entry key="..\:/Users/durob/Documents/MovieMania/app/src/main/res/mipmap-anydpi-v26/ic_launcher_moviemania2.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
